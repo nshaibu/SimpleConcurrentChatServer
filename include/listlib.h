@@ -1,15 +1,15 @@
 #ifndef LISTLIB_H
 #define LISTLIB_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "server.h"
 
-/*extern threads_ptr head;*/
-/*extern threads_ptr last;*/
-/*extern int list_height;*/
 
-threads_ptr create_thread_node(pthread_t tid, int user_id, struct user_inbox, short f_kill);
-int insert_node(threads_ptr node);
-void remove_node(threads_ptr node);
+threads_ptr create_thread_node(pthread_t tid, int user_id /*struct user_inbox,*/);
+int insert_thread_node(threads_ptr node);
+void remove_thread_node(threads_ptr node);
 void destroy_thread_node(void);
 
 #if !defined(SET_AND_GETTERS)

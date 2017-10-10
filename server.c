@@ -27,6 +27,8 @@
 
 #include "./include/server.h"
 
+struct sockaddr_in serv_addr; //server address struct
+struct sockaddr_in cli_addr; //client address struct
 
 static void *connection_handler(void *data) {
 	int *fd = (int*)data;

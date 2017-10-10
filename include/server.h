@@ -18,15 +18,27 @@ struct user_inbox {
 	//inbox struct
 };
 
-typedef struct data_ {
+struct DATA {
 		pthread_t tid; //thread id
-		unsigned int user_id; //user identification number
+		
+		//user identification number
+		unsigned int user_id; 
+		
+		//user specific inbox
 		struct user_inbox inbox;
-		short f_kill; //determine whether to kill thread 
-} *DATA_PTR, DATA;
+		
+		/*This is used to determine whether to kill thread or not. If is set 
+		to 1 it means that the thread is still running. However, if it is zero
+		it means the thread has been cancelled and therefore remove the node from
+		the list.*/
+		short f_kill; 
+		
+		/*The threads private socket*/
+		int threads_socket; 
+};
 
 typedef struct threads_node {
-	DATA_PTR data;
+	struct DATA *data;
 	struct threads_node *next; //points to next node
 } *threads_ptr, threads_info;
 
@@ -37,9 +49,6 @@ typedef struct net_info_ {
 } *net_info_ptr, net_info;
 
 //extern net_info_ptr network_data;
-
-struct sockaddr_in serv_addr;
-struct sockaddr_in cli_addr;
 
 static void token_ring_thread(threads_ptr info);
 static void *connection_socket(void *);
