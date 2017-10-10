@@ -61,6 +61,9 @@ void remove_thread_node(threads_ptr node) {
 	
 	if (node == head) {
 		--list_height;
+		head = node->next;
+		last->next = head;
+		
 		free(node->data);
 		free(node);
 	} else {
@@ -91,10 +94,10 @@ void destroy_thread_node(void) {
 void print_list() {
 	threads_ptr curr = head;
 	do{
-		printf("%ld\n", curr->data->tid);
+		printf("%ld ", curr->data->tid);
 		curr = curr->next;
-		sleep(1);
-	}while (curr != NULL);
+		sleep(0.5);
+	}while (curr != head);
 }
 #endif
 
@@ -105,14 +108,22 @@ int get_list_height() { return list_height; }
 #ifdef TRY
 
 int main() {
-	threads_ptr node;
-	for (int i=0; i<20; i++) {
+	threads_ptr node, me, me1;
+	for (int i=0; i<10; i++) {
 		node = create_thread_node(i, 4);
 		insert_thread_node(node);
+		if (i == 5) me = node;
+		if (i == 6) me1 = node;
 	}
 	
 	printf("%d\n", get_list_height() );
 	print_list();
+	remove_thread_node(me);
+	remove_thread_node(me1);
+	printf("\n");
+	print_list();
+	printf("%d\n", get_list_height() );
+	destroy_thread_node();
 	return 0;
 }
 #endif
