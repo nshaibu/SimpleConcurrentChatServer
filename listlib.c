@@ -17,7 +17,7 @@
 
 #===========================================================================================*/
 
-#define TRY
+//#define TRY
 
 #include "./include/listlib.h"
 
@@ -25,17 +25,15 @@ static threads_ptr head = NULL;
 static threads_ptr last = NULL;
 static int list_height = 0;
 
-threads_ptr create_thread_node(pthread_t tid, int user_id /*struct user_inbox ub*/) {
+threads_ptr create_thread_node(void) {
 	threads_ptr node = (threads_ptr)malloc(sizeof(threads_info));
 	if (node == NULL) return NULL;
 	
 	node->data = (struct DATA*)malloc(sizeof(struct DATA));
-	if (node->data == NULL) return NULL;
-	
-	node->data->tid = tid;
-	node->data->user_id = user_id;
-	//node->data->user_inbox = ub;
-	node->data->f_kill = 1;
+	if (node->data == NULL) {
+		free(node);
+		return NULL;
+	}
 	
 	return node;
 }
@@ -101,9 +99,23 @@ void print_list() {
 }
 #endif
 
+/*set and get socket for connection*/
 void set_thread_socket(threads_ptr node, int socket) { node->data->threads_socket = socket; }
-int get_thread_socket(threads_ptr node) { return node->data->threads_socket; }
+const int get_thread_socket(threads_ptr node) { return node->data->threads_socket; }
+/*Get list height*/
 int get_list_height() { return list_height; }
+/* set and get thread id */
+void set_thread_id(threads_ptr node, pthread_t id) { 	node->data->tid = id; }
+const int get_thread_id(threads_ptr node) { return node->data->tid; }
+/*set and get user id */
+const int get_thread_uid(threads_ptr node) { return node->data->user_id; }
+void set_thread_uid(threads_ptr node, int uid) { node->data->user_id = uid; }
+/*set and get user in box*/
+struct user_inbox* get_thread_userinbox(threads_ptr node) { return node->data->inbox; }
+void set_thread_userinbox(threads_ptr node, struct user_inbox *inbox) { node->data->inbox = inbox; }
+/*get new head and tail of the list*/
+threads_ptr get_thread_list_head() { return head; }
+threads_ptr get_thread_list_last() { return last; }
 
 #ifdef TRY
 

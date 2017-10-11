@@ -25,18 +25,27 @@
 
 #include "server.h"
 
-
-threads_ptr create_thread_node(pthread_t tid, int user_id /*struct user_inbox,*/);
+threads_ptr create_thread_node(void);
 int insert_thread_node(threads_ptr node);
 void remove_thread_node(threads_ptr node);
 void destroy_thread_node(void);
 
 #if !defined(SET_AND_GETTERS)
 #define SET_AND_GETTERS
-	
 	void set_thread_socket(threads_ptr node, int socket);
-	int get_thread_socket(threads_ptr node);
+	const int get_thread_socket(threads_ptr node);
 	
+	const int get_thread_id(threads_ptr node);
+	void set_thread_id(threads_ptr node, pthread_t id);
+	
+	const int get_thread_uid(threads_ptr);
+	void set_thread_uid(threads_ptr node, int uid);
+	
+	struct user_inbox* get_thread_userinbox(threads_ptr node);
+	void set_thread_userinbox(threads_ptr node, struct user_inbox *inbox);
+	
+	threads_ptr get_thread_list_head();
+	threads_ptr get_thread_list_last();
 	
 	int get_list_height();
 #endif /*SET_AND_GETTERS*/

@@ -17,7 +17,7 @@
 
 #===========================================================================================*/
 
-//#define _TRY
+#define _TRY
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,26 +26,28 @@
 
 
 #include "./include/server.h"
+#include "./include/listlib.h"
 
 struct sockaddr_in serv_addr; //server address struct
 struct sockaddr_in cli_addr; //client address struct
 
 static void *connection_handler(void *data) {
-	int *fd = (int*)data;
-	int i = 0;
-	
+	threads_ptr thread_node = (threads_ptr)data;
+	int i = 0, client;
+	char buff[50];
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 	
 	while (1) {
-		send(*fd, "hello world\n", 11, MSG_DONTWAIT);
+		sprintf(buff, "client on server are %d", get_list_height());
+		send(thread_node->data->threads_socket, buff, sizeof(buff), MSG_DONTWAIT);
 		sleep(4);
 		
 		if (i == 5) break;
 		++i;
 	}
-	shutdown(*fd, 2);
-	close(*fd);
+	shutdown(thread_node->data->threads_socket, 2);
+	close(thread_node->data->threads_socket);
 	pthread_cancel(pthread_self());
 }
 
@@ -58,6 +60,8 @@ net_info_ptr setup_net_data(char *ip, int port) {
 }
 
 void make_server(net_info_ptr info, threads_ptr th) {
+	threads_ptr thr_node; //Thread info nodes
+	
 	if ( (info->socket = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) { 
 		fprintf(stderr, "%s\n", "[x]Server failed to start");
 		exit(EXIT_FAILURE);
@@ -76,16 +80,31 @@ void make_server(net_info_ptr info, threads_ptr th) {
 	else fprintf(stdout, "%d:%s\n", getpid(), "Given socket a name...");
 	
 	listen(info->socket, SOMAXCONN);
-	int i=0, connection_socket[SOMAXCONN];
+	int connection_socket, ret;
 	
 	while(1) {
 		int size = sizeof(cli_addr);
-		connection_socket[i] = accept(info->socket, (struct sockaddr*)&cli_addr, (socklen_t*)&size);
-		pthread_t tid;
+		connection_socket = accept(info->socket, (struct sockaddr*)&cli_addr, (socklen_t*)&size);
 		
-		if ( pthread_create(&tid, NULL, connection_handler, (void*)&connection_socket[i]) ) 
-			fprintf(stderr, "%s %s %d\n", "Failed to start handler", __FILE__, __LINE__);
-		i++;
+		pthread_t tid;
+		thr_node = create_thread_node();
+		
+		if ( thr_node != NULL) {
+			ret = pthread_create(&tid, NULL, connection_handler, (void*)thr_node); 
+			if (ret != 0) {
+				fprintf(stderr, "%s %s %d\n", "Failed to start handler", __FILE__, __LINE__);
+				free(thr_node->data);
+				free(thr_node);
+			}else {
+				set_thread_id(thr_node, tid);
+				set_thread_socket(thr_node, connection_socket);
+				
+				insert_thread_node(thr_node);
+				/*TODO cannot set user_inbox inbox now because I have to know the user identification number
+				so that i can retreive the user inbox from the SQL lite server. The userinbox and user id will be 
+				set in the connection_handler function*/
+			}
+		}
 	}
 }
 
