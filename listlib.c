@@ -116,6 +116,9 @@ void set_thread_userinbox(threads_ptr node, struct user_inbox *inbox) { node->da
 /*get new head and tail of the list*/
 threads_ptr get_thread_list_head() { return head; }
 threads_ptr get_thread_list_last() { return last; }
+/*set and get f_kill*/
+void set_thread_fkill(threads_ptr node, short flag) { node->data->f_kill = flag; }
+const int get_thread_fkill(threads_ptr node) { return node->data->f_kill; }
 
 #ifdef TRY
 

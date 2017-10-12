@@ -47,6 +47,9 @@ void destroy_thread_node(void);
 	threads_ptr get_thread_list_head();
 	threads_ptr get_thread_list_last();
 	
+	void set_thread_fkill(threads_ptr node, short flag);
+	const int get_thread_fkill(threads_ptr node);
+	
 	int get_list_height();
 #endif /*SET_AND_GETTERS*/
 
