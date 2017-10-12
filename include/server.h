@@ -13,7 +13,17 @@
 #include <netinet/in.h>
 
 
+enum file_type {
+	TYPED_TXT , /*typed text*/ 
+	MP4 , /*mp4 files .mp4*/
+	MP3 , /*mp3 files .mp3*/
+	PDF , /*pdf files .pdf*/
+	TEXT  /*plain text docs .txt .text*/
+}
+
 struct user_inbox {
+	long msg_size; //size of the mesg in bytes for online_inbox
+	enum file_type mesg_type; //mesg type sent
 	/*
 	This inbox location is used to deposit messages if the user is online. It should 
 	either be empty or filled with data.i.e if data is read from it the reading thread 
